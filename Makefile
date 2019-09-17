@@ -5,7 +5,7 @@ PROJ = hubble
 ALL: build
 
 timestamps/virtualenv.tstamp:
-	virtualenv -p /usr/bin/python3.5 ./$(PROJ)-venv
+	virtualenv -p /usr/bin/python3.6 ./$(PROJ)-venv
 	touch $@
 
 virtualenv: timestamps/virtualenv.tstamp
