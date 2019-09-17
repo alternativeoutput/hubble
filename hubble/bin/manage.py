@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #
-# admin: hubble:hubblepasswd
+# admin: hubble:enjoypasswd
 #
 import os
 import sys

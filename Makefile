@@ -39,6 +39,7 @@ clean:
 
 destroy: clean
 	@deactivate >/dev/null 2>&1 || true
+	rm -f db.sqlite3
 	rm -rf ./$(PROJ)-venv
 	rm -rf ./node_modules
 	rm -f timestamps/[a-z]*
