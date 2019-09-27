@@ -14,6 +14,10 @@ setuptools.setup(
     url="https://github.com/alternativeoutput/hubble",
     packages=setuptools.find_packages(),
     include_package_data=True,
+    install_requires=[
+        'channels>=2.2.0,<2.3',
+        'channels-redis>=2.3.2,<2.4'
+        ],
     entry_points={
         'console_scripts': [
             'hubble_manage = hubble.bin.manage:hubble_manage'

@@ -3,7 +3,7 @@ function authbox_render(is_auth)
     var $authbox = $("div[name='authbox']");
 
     if (is_auth) {
-        $authbox.html("<h2>IS AUTHENTIICATED</h2>\
+        $authbox.html("<h2>IS AUTHENTICATED</h2>\
 <h2>Logout</h2>\
 <button type=\"button\" name=\"logout_submit\">Logout</button>\
 ");
