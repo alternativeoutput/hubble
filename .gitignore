@@ -1,0 +1,7 @@
+/db.sqlite3
+/hubble_server/settings.py
+__pycache__/
+/*-venv/
+/*.egg-info/
+/build/
+/dist/

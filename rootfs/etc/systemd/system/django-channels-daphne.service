@@ -1,0 +1,15 @@
+[Unit]
+Description=daphne server script fo hubble_server
+After=network.target
+
+[Service]
+User=#WEB_USER#
+Group=#WEB_GROUP#
+WorkingDirectory=#WRK_DIR#
+Environment=DJANGO_SECRET_KEY=#DJANGO_SECRET_KEY#
+Environment=DJANGO_ALLOWED_HOSTS=#ALLOWED_HOSTS#
+ExecStart=#VIRTUAL_ENV#/bin/daphne -v 2 -b 0.0.0.0 -p 8000 hubble_server.asgi:application
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

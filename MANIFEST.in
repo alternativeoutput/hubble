@@ -1,0 +1,6 @@
+include LICENSE
+include README.md
+recursive-include hubble/bin *
+recursive-include hubble/static *
+recursive-include hubble/templates *
+recursive-include hubble/migrations *
