@@ -22,7 +22,7 @@ def check_ajax(request):
     return JsonResponse({'is_auth': request.user.is_authenticated})
 
 
-# @login_required
+@login_required
 def login_landing(request):
     csrf = get_token(request)
     return JsonResponse({'csrf': csrf})

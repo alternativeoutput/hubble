@@ -16,8 +16,14 @@ var chatSocket = null;
 
 function chatsocket_start()
 {
+    var url = window.location.href;
+    var arr = url.split("/");
+    var ws_proto = 'ws';
+    if (arr[0] == 'https:')
+        ws_proto = 'wss';
+
     chatSocket = new WebSocket(
-        'ws://' + window.location.host +
+        ws_proto + '://' + window.location.host +
             '/ws/chat/' + roomName + '/');
 
     chatSocket.onmessage = function(e) {
@@ -59,12 +65,10 @@ document.querySelector('#chat-message-submit').onclick = function(e) {
 
 function logout_success_cb(content)
 {
-    Cookies.set('csrftoken', content['csrf']);
-
-    // debugger;
     console.log('logout_success_cb');
-    chatSocket.send(JSON.stringify({'type': 'logout'}));
-    // window.location.href = "../";
+    console.log(Cookies.get('csrftoken'));
+    console.log('logout_success_cb out');
+    chatsocket_restart();
 }
 
 function logout_cb(e) {
