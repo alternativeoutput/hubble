@@ -6,9 +6,11 @@ After=network.target
 User=#WEB_USER#
 Group=#WEB_GROUP#
 WorkingDirectory=#WRK_DIR#
+Environment=AO_HUB_WRK_DIR=#WRK_DIR#
 Environment=DJANGO_SECRET_KEY=#DJANGO_SECRET_KEY#
 Environment=DJANGO_ALLOWED_HOSTS=#ALLOWED_HOSTS#
-ExecStart=#VIRTUAL_ENV#/bin/daphne -v 2 -b 0.0.0.0 -p 8000 hubble_server.asgi:application
+Environment=DJANGO_SETTINGS_MODULE=#PROJ#_server.settings
+ExecStart=#WRK_DIR#/#VIRTUAL_ENV#/bin/daphne -v 2 -b 0.0.0.0 -p 8000 hubble_server.asgi:application
 Restart=always
 
 [Install]

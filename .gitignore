@@ -1,5 +1,5 @@
 /db.sqlite3
-/hubble_server/settings.py
+/hubble_server/settings_dev.py
 __pycache__/
 /*-venv/
 /*.egg-info/
