@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="hubble",
-    version="0.0.1",
+    version="0.1.0",
     author="Matteo Nastasi",
     author_email="nastasi@alternativeoutput.it",
     description="Backend for full interactive web-app",
