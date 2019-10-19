@@ -16,7 +16,8 @@ setuptools.setup(
     include_package_data=True,
     install_requires=[
         'channels>=2.2.0,<2.3',
-        'channels-redis>=2.3.2,<2.4'
+        'channels-redis>=2.3.2,<2.4',
+        'pyaml>=19.4.1,<19.5'
         ],
     entry_points={
         'console_scripts': [

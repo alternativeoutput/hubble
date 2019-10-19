@@ -11,8 +11,8 @@ AO_HUB_WRK_DIR ?= /var/lib/$(PROJ)
 export AO_HUB_WRK_DIR
 AO_HUB_VIRTUAL_ENV ?= env
 export AO_HUB_VIRTUAL_ENV
-AO_HUB_ALLOWED_HOSTS ?= 
-export AO_HUB_ALLOWED_HOSTS = '"*"'
+AO_HUB_ALLOWED_HOSTS ?= *
+export AO_HUB_ALLOWED_HOSTS
 # secret key could include dollar char, the only way to manage it
 # from environment correctly is export and use with $$ prefix
 AO_HUB_DJANGO_SECRET_KEY ?= to_be_set
@@ -38,25 +38,30 @@ endef
 define USAGE =
 
 Usage:
-    make help                - this help
-    make secret              - dump a valid DJANGO_SECRET_KEY
-    sudo make [VARS] create  - create a production installation
+    make help                   - this help
+    make secret                 - dump a valid DJANGO_SECRET_KEY
+    make env                    - create string to source dev virtual environment
+    make create_dev             - create devel framework
+    make destroy_dev            - destroy devel framework
+    make reinstall              - reinstall production after creation
+    sudo -E make [VARS] create  - create a production installation
+    sudo -E make [VARS] destroy - destroy production installation
     the following arguments are managed:
 
-    AO_HUB_WRK_DIR           - working dir of production installation
+    AO_HUB_WRK_DIR              - working dir of production installation
         current: "$(AO_HUB_WRK_DIR)"
-    AO_HUB_VIRTUAL_ENV       - name of virtual environment
+    AO_HUB_VIRTUAL_ENV          - name of virtual environment
         current: "$(AO_HUB_VIRTUAL_ENV)"
-    AO_HUB_ALLOWED_HOSTS     - csv strings list of public hostnames
+    AO_HUB_ALLOWED_HOSTS        - csv strings list of public hostnames
                                allowed by django
         current: [$(AO_HUB_ALLOWED_HOSTS)]
-    AO_HUB_DJANGO_SECRET_KEY - django secret key
+    AO_HUB_DJANGO_SECRET_KEY    - django secret key
         current: "$(AO_HUB_DJANGO_SECRET_KEY)"
-    AO_HUB_STATIC_ROOT       - static root folder
+    AO_HUB_STATIC_ROOT          - static root folder
         current: $(AO_HUB_STATIC_ROOT)
-    AO_HUB_WEB_USER          - user running daemons
+    AO_HUB_WEB_USER             - user running daemons
 	current: $(AO_HUB_WEB_USER)
-    AO_HUB_WEB_GROUP         - group of user running daemons
+    AO_HUB_WEB_GROUP            - group of user running daemons
         current: $(AO_HUB_WEB_GROUP)
 
 endef
@@ -65,7 +70,6 @@ export USAGE
 
 help: WRK_DIR VIRTUAL_ENV
 	@echo "$$USAGE"
-
 
 timestamps_dev/virtualenv.tstamp:
 	virtualenv -p /usr/bin/python3.6 ./$(PROJ)-venv
@@ -94,10 +98,11 @@ install_reqs: check_venv_var
 # MAIN TARGETS
 #
 
+%_dev: AO_HUB_WRK_DIR = .
 create_dev: virtualenv_dev install_dev_reqs
 	. $(PROJ)-venv/bin/activate \
 	&& python manage.py migrate \
-	&& python manage.py loaddata fixtures/auth_user.json
+	&& python manage.py loaddata hubble/fixtures/auth_user.json
 
 recreate_dev: destroy_dev create_dev
 
@@ -159,7 +164,7 @@ timestamps/daemons_create.tstamp:
 	test -d /etc/systemd/system
 	$(call populate_tmpl,rootfs/etc/systemd/system/django-channels-daphne.service,/etc/systemd/system/django-channels-daphne.service)
 	$(call populate_tmpl,rootfs/etc/systemd/system/django-channels-runworker.service,/etc/systemd/system/django-channels-runworker.service)
-	sudo -u $(AO_HUB_WEB_USER) bash -c "export AO_HUB_WRK_DIR=$(AO_HUB_WRK_DIR) ;  source /var/lib/hubble/env/bin/activate ; hubble_manage migrate"
+	sudo -u $(AO_HUB_WEB_USER) bash -c "export AO_HUB_WRK_DIR=$(AO_HUB_WRK_DIR) ;  source /var/lib/$(PROJ)/env/bin/activate ; hubble_manage migrate"
 	systemctl daemon-reload
 	systemctl enable django-channels-runworker.service
 	systemctl restart django-channels-runworker.service
@@ -169,6 +174,10 @@ timestamps/daemons_create.tstamp:
 
 daemons_create: timestamps/daemons_create.tstamp
 
+config_create:
+	mkdir -p $(AO_HUB_WRK_DIR)/config
+	./helpers/config-gen.py > $(AO_HUB_WRK_DIR)/config/$(PROJ).yaml
+
 daemons_destroy:
 	systemctl stop django-channels-runworker.service
 	systemctl disable django-channels-runworker.service
@@ -176,11 +185,11 @@ daemons_destroy:
 	systemctl disable django-channels-daphne.service
 	rm -f timestamps/daemons_create.tstamp
 
-create: virtualenv install daemons_create
+create: virtualenv install config_create daemons_create
 	echo "Finished"
 
 timestamps/populate.tstamp:
-	@sudo -u $(AO_HUB_WEB_USER) bash -c "export AO_HUB_WRK_DIR=$(AO_HUB_WRK_DIR) ;  source /var/lib/hubble/env/bin/activate ; hubble_manage loaddata ./hubble/fixtures/auth_user.json"
+	@sudo -u $(AO_HUB_WEB_USER) bash -c "export AO_HUB_WRK_DIR=$(AO_HUB_WRK_DIR) ;  source /var/lib/$(PROJ)/env/bin/activate ; $(PROJ)_manage loaddata ./$(PROJ)/fixtures/auth_user.json"
 	touch $@
 
 populate: timestamps/populate.tstamp

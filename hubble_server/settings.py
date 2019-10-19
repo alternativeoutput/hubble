@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+import yaml
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +26,7 @@ SECRET_KEY = 'xxxx'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 LOGIN_REDIRECT_URL = '/chat/accounts/password_change/'
 
@@ -132,3 +133,12 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.getenv('STATIC_ROOT', os.path.join(BASE_DIR, "static_root"))
+
+config_filepath = os.path.join(HOME_DIR, 'config', 'hubble.yaml')
+try:
+    with open(config_filepath, encoding='utf-8-sig') as f:
+        cconfig = yaml.load(f, Loader=yaml.FullLoader)
+        if 'ALLOWED_HOSTS' in cconfig:
+            ALLOWED_HOSTS = cconfig['ALLOWED_HOSTS']
+except FileNotFoundError:
+    pass
