@@ -65,7 +65,6 @@ document.querySelector('#chat-message-submit').onclick = function(e) {
 
 function logout_success_cb(content)
 {
-  Cookies.remove('csrftoken');
   console.log('logout_success_cb');
   console.log(Cookies.get('csrftoken'));
   console.log('logout_success_cb out');

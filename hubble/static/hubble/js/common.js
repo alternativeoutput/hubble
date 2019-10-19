@@ -3,26 +3,24 @@ $.ajaxSetup({
   beforeSend: function(xhr, settings) {
     if (!csrfSafeMethod(settings.type)) {
       xhr.setRequestHeader("X-CSRFToken", Cookies.get('csrftoken'));
+      xhr.setRequestHeader("x-csrf-token", "fetch");
     }
   }
 });
 
 function login_success_cb(content, y, xhr)
 {
-  Cookies.set('csrftoken', content['csrf']);
   if (typeof authbox_render != undefined)
-    authbox_render(true);
-}
+    authbox_render(content.is_auth);
+ }
 
 function csrfSafeMethod(method) {
   // these HTTP methods do not require CSRF protection
   return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 }
 
-function logout_success_cb()
+function logout_success_cb(content, y, xhr)
 {
-  console.log('logout_success_cb');
-  Cookies.remove('csrftoken');
   if (typeof authbox_render != undefined)
     authbox_render(false);
 }
@@ -32,7 +30,7 @@ function logout_cb(e) {
   $("div[name='check-ajax-res']").html("");
   $.ajax({
     type: "GET",
-    url: "/chat/accounts/logout",
+    url: "logout/",
     success: logout_success_cb});
 
   if (typeof(chatSocket) != 'undefined') {
@@ -60,7 +58,7 @@ function login_cb(e) {
         return(false);
       }
     },
-    url: "/chat/accounts/login/?next=/chat/login_landing/",
+    url: "login/",
     data: {username: user,
            password: passwd},
     success: login_success_cb

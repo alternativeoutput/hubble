@@ -6,7 +6,8 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
-    url(r'^login_landing/', views.login_landing, name='login_landing'),
+    url(r'^login/', views.login_view, name='login_landing'),
+    url(r'^logout/', views.logout_view, name='logout'),
     url(r'^check_ajax/', views.check_ajax, name='check_ajax'),
     url(r'^(?P<room_name>[^/]+)/$', views.room, name='room'),
     path('accounts/', include('django.contrib.auth.urls'))

@@ -1,10 +1,9 @@
 import json
 from django.shortcuts import render
 from django.utils.safestring import mark_safe
-from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.middleware.csrf import get_token
 from time import ctime
+from django.contrib.auth import authenticate, login, logout
 
 
 def index(request):
@@ -22,7 +21,19 @@ def check_ajax(request):
     return JsonResponse({'is_auth': request.user.is_authenticated})
 
 
-@login_required
-def login_landing(request):
-    csrf = get_token(request)
-    return JsonResponse({'csrf': csrf})
+def login_view(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        login(request, user)
+        # Redirect to a success page.
+        return JsonResponse({'is_auth': True})
+    else:
+        return JsonResponse({'is_auth': False})
+
+
+def logout_view(request):
+    print('My Logout')
+    logout(request)
+    return JsonResponse({'success': True})
