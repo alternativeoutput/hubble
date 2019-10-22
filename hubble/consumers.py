@@ -25,6 +25,7 @@ class ChatConsumer(WebsocketConsumer):
 
     def disconnect(self, close_code):
         # Leave room group
+        print('Disconnect')
         async_to_sync(self.channel_layer.group_discard)(
             self.room_group_name,
             self.channel_name
@@ -52,7 +53,10 @@ class ChatConsumer(WebsocketConsumer):
         user = async_to_sync(get_user)(self.scope)
         print("IS AUTH" if user.is_authenticated else
               "NOT AUTH")
-
+        if not user.is_authenticated:
+            # to add a code use code=<value> as close parameter
+            self.close()
+            return
         message = event['message']
 
         # Send message to WebSocket

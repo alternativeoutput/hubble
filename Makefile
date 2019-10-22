@@ -38,15 +38,22 @@ endef
 define USAGE =
 
 Usage:
-    make help                   - this help
-    make secret                 - dump a valid DJANGO_SECRET_KEY
-    make env                    - create string to source dev virtual environment
-    make create_dev             - create devel framework
-    make destroy_dev            - destroy devel framework
-    make reinstall              - reinstall production after creation
-    sudo -E make [VARS] create  - create a production installation
-    sudo -E make [VARS] destroy - destroy production installation
-    the following arguments are managed:
+  tools
+    make help                    - this help
+    make secret                  - dump a valid DJANGO_SECRET_KEY
+
+  development:
+    make env                     - create string to source dev virtual environment
+    make create_dev              - create devel framework
+    make destroy_dev             - destroy devel framework
+    make recreate_dev            - recreate devel framework
+
+  production:
+    make reinstall               - reinstall production after creation
+    sudo -E make [VARS] create   - create a production installation
+    sudo -E make [VARS] destroy  - destroy production installation
+    sudo -E make [VARS] populate - load production db with development data
+ the following arguments are managed:
 
     AO_HUB_WRK_DIR              - working dir of production installation
         current: "$(AO_HUB_WRK_DIR)"

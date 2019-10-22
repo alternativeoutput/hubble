@@ -16,9 +16,11 @@ Including another URLconf
 # server/urls.py
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.views.generic import RedirectView
 
 urlpatterns = [
     url(r'^accounts/', include('django.contrib.auth.urls')),
     url(r'^chat/', include('hubble.urls')),
     url(r'^admin/', admin.site.urls),
+    url(r'^favicon\.ico$',RedirectView.as_view(url='/static/img/favicon.ico')),
 ]

@@ -9,6 +9,6 @@ urlpatterns = [
     url(r'^login/', views.login_view, name='login_landing'),
     url(r'^logout/', views.logout_view, name='logout'),
     url(r'^check_ajax/', views.check_ajax, name='check_ajax'),
-    url(r'^(?P<room_name>[^/]+)/$', views.room, name='room'),
+#    url(r'^(?P<room_name>[^/]+)/$', views.room, name='room'),
     path('accounts/', include('django.contrib.auth.urls'))
 ]

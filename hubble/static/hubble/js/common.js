@@ -12,7 +12,30 @@ function login_success_cb(content, y, xhr)
 {
   if (typeof authbox_render != undefined)
     authbox_render(content.is_auth);
- }
+
+  if (content.is_auth) {
+    chatsocket_start();
+
+    document.querySelector('#chat-message-input').focus();
+    document.querySelector('#chat-message-input').onkeyup = function(e) {
+      if (e.keyCode === 13) {  // enter, return
+        document.querySelector('#chat-message-submit').click();
+      }
+    };
+
+    document.querySelector('#chat-message-submit').onclick = function(e) {
+      var messageInputDom = document.querySelector('#chat-message-input');
+      var message = messageInputDom.value;
+      console.log('onclick send');
+      chatSocket.send(JSON.stringify({
+        'type': 'chat-message',
+        'message': message
+      }));
+
+      messageInputDom.value = '';
+    };
+  }
+}
 
 function csrfSafeMethod(method) {
   // these HTTP methods do not require CSRF protection
@@ -21,6 +44,14 @@ function csrfSafeMethod(method) {
 
 function logout_success_cb(content, y, xhr)
 {
+  if (chatSocket) {
+    chatSocket.onclose = null;
+    chatSocket.close();
+    chatSocket = null;
+  }
+  console.log('logout_success_cb');
+  document.querySelector('#chat-message-submit').onclick = null;
+  document.querySelector('#chat-message-input').onkeyup = null;
   if (typeof authbox_render != undefined)
     authbox_render(false);
 }

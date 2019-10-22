@@ -14,7 +14,7 @@
 
 ### production
 
-Currently for ``systemd`` managed services using ``daphne``.
+Currently for ``systemd`` managed services using ``daphne`` and with ``nginx`` as web server.
 
 ``sudo -E make create``
 
