@@ -3,7 +3,7 @@
     "model": "auth.user",
     "pk": 1,
     "fields": {
-        "password": "pbkdf2_sha256$100000$M78zdyp0Jy0W$QdcMA/v4r/wgLleFpKHTbD6CLPYZVBDIX/XZU0Pp54E=",
+        "password": "pbkdf2_sha256$150000$zRrsfuu54hVo$+r3WyWsNEvXnr3dV3WP1TDUToR3fhXNTlSJZ9PtJl1Y=",
         "last_login": null,
         "is_superuser": true,
         "username": "hubble",
