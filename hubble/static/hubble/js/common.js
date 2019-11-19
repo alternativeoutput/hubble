@@ -15,25 +15,6 @@ function login_success_cb(content, y, xhr)
 
   if (content.is_auth) {
     chatsocket_start();
-
-    document.querySelector('#chat-message-input').focus();
-    document.querySelector('#chat-message-input').onkeyup = function(e) {
-      if (e.keyCode === 13) {  // enter, return
-        document.querySelector('#chat-message-submit').click();
-      }
-    };
-
-    document.querySelector('#chat-message-submit').onclick = function(e) {
-      var messageInputDom = document.querySelector('#chat-message-input');
-      var message = messageInputDom.value;
-      console.log('onclick send');
-      chatSocket.send(JSON.stringify({
-        'type': 'chat-message',
-        'message': message
-      }));
-
-      messageInputDom.value = '';
-    };
   }
 }
 
@@ -65,7 +46,7 @@ function logout_cb(e) {
     success: logout_success_cb});
 
   if (typeof(chatSocket) != 'undefined') {
-    chatSocket.send(JSON.stringify({
+    chatSocket_send(JSON.stringify({
       'type': 'logout'
     }));
   }
@@ -121,3 +102,5 @@ function check_ajax_cb(e) {
     success: check_ajax_success_cb
   });
 }
+
+

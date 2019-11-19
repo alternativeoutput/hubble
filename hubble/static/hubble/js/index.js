@@ -13,6 +13,26 @@ function authbox_render(is_auth)
 <button type="button" name="logout_submit">Logout</button>\
 ');
     $("button[name='logout_submit']").click(logout_cb);
+
+
+    document.querySelector('#chat-message-input').focus();
+    document.querySelector('#chat-message-input').onkeyup = function(e) {
+      if (e.keyCode === 13) {  // enter, return
+        document.querySelector('#chat-message-submit').click();
+      }
+    };
+
+    document.querySelector('#chat-message-submit').onclick = function(e) {
+      var messageInputDom = document.querySelector('#chat-message-input');
+      var message = messageInputDom.value;
+      console.log('onclick send');
+      chatsocket_send(JSON.stringify({
+        'type': 'chat-message',
+        'message': message
+      }));
+
+      messageInputDom.value = '';
+    };
   }
   else {
     $authbox.html('<h2>IS NOT AUTHENTICATED</h2>\
@@ -38,4 +58,7 @@ function authbox_render(is_auth)
 }
 
 authbox_render(user_is_auth);
+if (user_is_auth) {
+  chatsocket_start();
+}
 $("button[name='check-ajax']").click(check_ajax_cb);
