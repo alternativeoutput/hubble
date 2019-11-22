@@ -12,6 +12,12 @@
 
 ``make create_dev``
 
+## default users
+
+``hubble`` with password ``hubblepasswd``
+
+``pibble`` with password ``pibblepasswd``
+
 ### production
 
 Currently for ``systemd`` managed services using ``daphne`` and with ``nginx`` as web server.
