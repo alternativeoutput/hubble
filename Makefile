@@ -107,7 +107,7 @@ install_reqs: check_venv_var
 
 %_dev: AO_HUB_WRK_DIR = .
 create_dev: virtualenv_dev install_dev_reqs
-	. $(PROJ)-venv/bin/activate \
+	. '$(PROJ)-venv/bin/activate' \
 	&& python manage.py migrate \
 	&& python manage.py loaddata hubble/fixtures/auth_user.json
 
@@ -129,6 +129,17 @@ env:
 #
 secret:
 	@python -c 'import random; print("".join([random.choice("abcdefghijklmnopqrstuvwxyz0123456789!@#$$%^&*(-_=+)") for i in range(50)]))'
+
+start_dev:
+	. './$(PROJ)-venv/bin/activate' \
+	&& export DJANGO_SETTINGS_MODULE=hubble_server.settings \
+	&& env \
+	&& python ./manage.py runserver 0.0.0.0:9000
+
+
+worker_start_dev:
+	. ./$(PROJ)-venv/bin/activate \
+	&& python ./manage.py runworker room
 
 #
 #  PRODUCTION
@@ -209,9 +220,6 @@ destroy: daemons_destroy
 
 # build:
 # 	. ./$(PROJ)-venv/bin/activate && yarn build
-
-# start:
-# 	. ./$(PROJ)-venv/bin/activate && yarn start
 
 # check:
 # 	. ./$(PROJ)-venv/bin/activate && python --version
