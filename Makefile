@@ -89,6 +89,7 @@ virtualenv_dev: timestamps_dev/virtualenv.tstamp
 check_venv_var:
 	@if [ "$($(PROD_ENV))" = "" ]; then echo "$(PROD_ENV) env variable not set" ; exit 1 ; fi
 
+# user hubble passwd enjoypasswd
 migrate_dev: timestamps_dev/migrate.tstamp
 	. '$(PROJ)-venv/bin/activate' \
 	&& python manage.py migrate \
