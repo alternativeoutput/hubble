@@ -45,5 +45,10 @@ function chatsocket_restart()
   chatsocket_start()
 }
 
+function chatsocket_send(msg)
+{
+  console.log('send');
+  chatSocket.send(msg);
+}
 // $("button[name='logout-submit']").click(logout_cb);
 // $("button[name='check-ajax']").click(check_ajax_cb);

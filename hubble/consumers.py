@@ -36,12 +36,14 @@ class ChatConsumer(WebsocketConsumer):
         text_data_json = json.loads(text_data)
         if text_data_json['type'] == 'chat-message':
             message = text_data_json['message']
+            user = async_to_sync(get_user)(self.scope)
 
             # Send message to room group
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
                 {
                     'type': 'chat_message',
+                    'username': user.username,
                     'message': message
                 }
             )
@@ -58,8 +60,10 @@ class ChatConsumer(WebsocketConsumer):
             self.close()
             return
         message = event['message']
+        user = event['username']
 
         # Send message to WebSocket
         self.send(text_data=json.dumps({
+            'username': user,
             'message': message
         }))
