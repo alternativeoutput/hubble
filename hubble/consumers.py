@@ -33,6 +33,9 @@ class Room(SyncConsumer):
                 'login': event['login'],
                 'channel': event['sender']
                 }
+            msg = 'joined'
+        else:
+            msg = 'rejoined'
 
         user = room['users'][event['login']]
         user['channel'] = event['sender']
@@ -44,7 +47,7 @@ class Room(SyncConsumer):
                 'type': 'chat_message',
                 'username': 'Bot',
                 'message': ('User ' + user['login'] +
-                            ' joined stercorario')
+                            ' %s stercorario' % msg)
             }
         )
 
