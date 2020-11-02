@@ -14,7 +14,7 @@ class Room(SyncConsumer):
         self.rooms = {}
         super().__init__(*args, **kwargs)
 
-    def mytest(self, event):
+    def table_join(self, event):
         if event['room_name'] not in self.rooms:
             self.rooms[event['room_name']] = {
                 'group_name': event['room_name'],
@@ -55,11 +55,47 @@ class Room(SyncConsumer):
                 }
             )
 
+    def table_leave(self, event):
+        print('table_leave')
+        print(event)
+
+        # 'room_name': self.room_name,
+        # 'login': self.user.username
+        if event['room_name'] not in self.rooms:
+            return
+        room = self.rooms[event['room_name']]
+        if event['login'] not in room['users']:
+            return
+        user_leaving = room['users'].pop(
+            event['login'])
+
+        users = room['users']
+        for user_key in users:
+            user_cur = room['users'][user_key]
+
+            # Send message to room group
+            async_to_sync(self.channel_layer.send)(
+                user_cur['channel'],
+                {
+                    'type': 'chat_message',
+                    'username': 'Bot',
+                    'message': (
+                        'User ' + user_leaving['login'] +
+                        ' leave stercorario')
+                }
+            )
+        if len(users.keys()) > 0:
+            return
+
+        async_to_sync(self.channel_layer.group_discard)(
+            'chat_%s' % event['room_name'],
+            self.channel_name
+        )
+        self.rooms.pop(event['room_name'])
+        print('table_leave: end')
+
     def chat_message(self, event):
         pass
-
-    def mytestreply(self, msg):
-        print('mytestreply here')
 
     def connect(self, event):
         print('Room connect')
@@ -73,6 +109,7 @@ class Room(SyncConsumer):
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
+        print("connect:begin")
         print("CHNAME: %s" % self.channel_name)
 
         self.room_name = self.scope['url_route']['kwargs']['room_name']
@@ -92,7 +129,7 @@ class ChatConsumer(WebsocketConsumer):
         async_to_sync(self.channel_layer.send)(
             'room',
             {
-                'type': 'mytest',
+                'type': 'table_join',
                 'login': self.user.username,
                 'room_name': self.room_name,
                 'sender': self.channel_name
@@ -102,12 +139,11 @@ class ChatConsumer(WebsocketConsumer):
         # if not logged in special "AnonymousUser" is returned
         self.accept()
 
-    def mytestreply(self, msg):
-        print('mytestreply here 2')
-
     def disconnect(self, close_code):
         # Leave room group
         print('Disconnect')
+        print(self)
+
         async_to_sync(self.channel_layer.group_discard)(
             self.room_group_name,
             self.channel_name
@@ -116,7 +152,8 @@ class ChatConsumer(WebsocketConsumer):
     # Receive message from WebSocket
     def receive(self, text_data):
         print('receive')
-        print(text_data)
+        # print(text_data)
+        # print(self.user.username)
         text_data_json = json.loads(text_data)
         if text_data_json['type'] == 'chat-message':
             message = text_data_json['message']
@@ -133,6 +170,17 @@ class ChatConsumer(WebsocketConsumer):
                 }
             )
         elif text_data_json['type'] == 'logout':
+            print('logout')
+
+            async_to_sync(self.channel_layer.send)(
+                'room',
+                {
+                    'type': 'table_leave',
+                    'room_name': self.room_name,
+                    'login': self.user.username
+                }
+            )
+            self.disconnect(0)
             async_to_sync(logout)(self.scope)
 
     # Receive message from room group
