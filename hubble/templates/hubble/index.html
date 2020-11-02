@@ -37,7 +37,7 @@
       var csrf_token = "{{ csrf_token }}";
 
       var user_is_auth = {% if request.user.is_authenticated %}true{% else %}false{% endif %};
-
+      var table = {% if table %}"{{ table | safe }}"{% else %}null{% endif %};
     </script>
     <script src="{% static 'hubble/js/room.js' %}"></script>
     <script src="{% static 'hubble/js/index.js' %}"></script>

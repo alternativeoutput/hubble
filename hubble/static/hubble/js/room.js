@@ -14,7 +14,7 @@ $.ajaxSetup({
 
 var chatSocket = null;
 
-function chatsocket_start()
+function chatsocket_start(chan_name)
 {
   var url = window.location.href;
   var arr = url.split("/");
@@ -24,7 +24,7 @@ function chatsocket_start()
   
   chatSocket = new WebSocket(
     ws_proto + '://' + window.location.host +
-      '/ws/chat/single_chat/');
+      '/ws/chat/' + chan_name + '/');
   
   chatSocket.onmessage = function(e) {
     var data = JSON.parse(e.data);
@@ -39,10 +39,10 @@ function chatsocket_start()
   };
 }
 
-function chatsocket_restart()
+function chatsocket_restart(chan_name)
 {
   chatSocket.close();
-  chatsocket_start()
+  chatsocket_start(chan_name)
 }
 
 function chatsocket_send(msg)

@@ -9,34 +9,59 @@ from channels.consumer import SyncConsumer
 
 
 class Room(SyncConsumer):
+    def __init__(self, *args, **kwargs):
+        print('Room::__init__')
+        self.rooms = {}
+        super().__init__(*args, **kwargs)
+
     def mytest(self, event):
-        print('here we are')
-        print(event['sender'])
-        async_to_sync(self.channel_layer.send)(
-            event['sender'],
+        if event['room_name'] not in self.rooms:
+            self.rooms[event['room_name']] = {
+                'group_name': event['room_name'],
+                'users': {}
+            }
+
+            # Join room group
+            async_to_sync(self.channel_layer.group_add)(
+                'chat_%s' % event['room_name'],
+                self.channel_name
+            )
+        room = self.rooms[event['room_name']]
+
+        if event['login'] not in room['users']:
+            room['users'][event['login']] = {
+                'login': event['login'],
+                'channel': event['sender']
+                }
+
+        user = room['users'][event['login']]
+        user['channel'] = event['sender']
+
+        # Send message to room group
+        async_to_sync(self.channel_layer.group_send)(
+            'chat_%s' % event['room_name'],
             {
-                'type': 'mytestreply',
-                'sender': self.channel_name
+                'type': 'chat_message',
+                'username': 'Bot',
+                'message': ('User ' + user['login'] +
+                            ' joined stercorario')
             }
         )
+
+    def chat_message(self, event):
+        pass
 
     def mytestreply(self, msg):
         print('mytestreply here')
 
     def connect(self, event):
         print('Room connect')
+        print(event)
         return super().connect(event)
-        #self.send({
-        #    "type": "websocket.accept",
-        #})
 
     def receive(self, event):
         print('Room receive')
         return super().receive(event)
-        #self.send({
-        #    "type": "websocket.send",
-        #    "text": event["text"],
-        #})
 
 
 class ChatConsumer(WebsocketConsumer):
@@ -61,6 +86,8 @@ class ChatConsumer(WebsocketConsumer):
             'room',
             {
                 'type': 'mytest',
+                'login': self.user.username,
+                'room_name': self.room_name,
                 'sender': self.channel_name
             }
         )
@@ -81,6 +108,8 @@ class ChatConsumer(WebsocketConsumer):
 
     # Receive message from WebSocket
     def receive(self, text_data):
+        print('receive')
+        print(text_data)
         text_data_json = json.loads(text_data)
         if text_data_json['type'] == 'chat-message':
             message = text_data_json['message']
