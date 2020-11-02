@@ -40,16 +40,20 @@ class Room(SyncConsumer):
         user = room['users'][event['login']]
         user['channel'] = event['sender']
 
-        # Send message to room group
-        async_to_sync(self.channel_layer.group_send)(
-            'chat_%s' % event['room_name'],
-            {
-                'type': 'chat_message',
-                'username': 'Bot',
-                'message': ('User ' + user['login'] +
-                            ' %s stercorario' % msg)
-            }
-        )
+        for user_key in room['users']:
+            user_cur = room['users'][user_key]
+            if user_cur['login'] == event['login']:
+                continue
+            # Send message to room group
+            async_to_sync(self.channel_layer.send)(
+                user_cur['channel'],
+                {
+                    'type': 'chat_message',
+                    'username': 'Bot',
+                    'message': ('User ' + user['login'] +
+                                ' %s stercorario' % msg)
+                }
+            )
 
     def chat_message(self, event):
         pass
